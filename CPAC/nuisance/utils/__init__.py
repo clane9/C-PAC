@@ -337,6 +337,14 @@ def generate_summarize_tissue_mask(nuisance_wf,
                     mask_to_epi.inputs.interp = 'nearestneighbour'
 
             elif regressor_selector['extraction_resolution'] == "Functional":
+
+                    mask_to_epi = pe.Node(interface=fsl.FLIRT(),
+                                name='{}_flirt'.format(node_mask_key),
+                                mem_gb=3.63,
+                                mem_x=(3767129957844731 / 1208925819614629174706176,
+                                    'in_file'))
+                    mask_to_epi.inputs.interp = 'nearestneighbour'
+
                     # apply anat2func matrix
                     mask_to_epi.inputs.apply_xfm = True
                     mask_to_epi.inputs.output_type = 'NIFTI_GZ'
@@ -349,6 +357,14 @@ def generate_summarize_tissue_mask(nuisance_wf,
                         (mask_to_epi, 'in_matrix_file')
                     ))
             else:
+                mask_to_epi = pe.Node(interface=fsl.FLIRT(),
+                                name='{}_flirt'.format(node_mask_key),
+                                mem_gb=3.63,
+                                mem_x=(3767129957844731 / 1208925819614629174706176,
+                                    'in_file'))
+                                    
+                mask_to_epi.inputs.interp = 'nearestneighbour'
+                
                 resolution = regressor_selector['extraction_resolution']
                 mask_to_epi.inputs.apply_isoxfm = resolution
 
