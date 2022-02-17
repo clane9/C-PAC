@@ -364,7 +364,7 @@ def generate_summarize_tissue_mask(nuisance_wf,
                                     'in_file'))
                                     
                 mask_to_epi.inputs.interp = 'nearestneighbour'
-                
+
                 resolution = regressor_selector['extraction_resolution']
                 mask_to_epi.inputs.apply_isoxfm = resolution
 
@@ -384,12 +384,12 @@ def generate_summarize_tissue_mask(nuisance_wf,
                        # (mask_to_epi, 'reference')
                    # ))
 
-                nuisance_wf.connect(*(
+            nuisance_wf.connect(*(
                     pipeline_resource_pool[prev_mask_key] +
                     (mask_to_epi, 'in_file')
                 ))
 
-                pipeline_resource_pool[mask_key] = \
+            pipeline_resource_pool[mask_key] = \
                     (mask_to_epi, 'out_file')
 
             if full_mask_key.startswith('CerebrospinalFluid'):
