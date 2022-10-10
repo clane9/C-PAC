@@ -120,36 +120,46 @@ def registration_guardrail_node(name=None):
                          function=registration_guardrail), name=name)
 
 
-def registration_guardrail_workflow(registration_node, retry=True):
+def registration_guardrail_workflow(registration_node, retry=True, spec=None):
     """A workflow to handle hitting a registration guardrail
 
     Parameters
     ----------
     name : str
 
-    registration_node : Node
+    registration_node : Node or Workflow
 
     retry : bool, optional
+
+    spec : dict, required for guardrailing function nodes
+       Resource pool keys for reference and registered resources, in
+       the format ``{'reference': str, 'registered': str}``
 
     Returns
     -------
     Workflow
+
+    See Also
+    --------
+    spec_key
     """
     name = f'{registration_node.name}_guardrail'
     wf = Workflow(name=f'{name}_wf')
     outputspec = deepcopy(registration_node.outputs)
     guardrail = registration_guardrail_node(name)
-    outkey = spec_key(registration_node, 'registered')
+    if spec is None:
+        spec = {key: spec_key(registration_node, key) for
+                key in ['reference', 'registered']}
     wf.connect([
-        (registration_node, guardrail, [
-            (spec_key(registration_node, 'reference'), 'reference')]),
-        (registration_node, guardrail, [(outkey, 'registered')])])
+        (registration_node, guardrail, [(spec['reference'], 'reference')]),
+        (registration_node, guardrail, [(spec['registered'], 'registered')])])
     if retry:
         wf = retry_registration(wf, registration_node,
                                 guardrail.outputs.registered)
     else:
-        wf.connect(guardrail, 'registered', outputspec, outkey)
-        wf = connect_from_spec(wf, outputspec, registration_node, outkey)
+        wf.connect(guardrail, 'registered', outputspec, spec['registered'])
+        wf = connect_from_spec(wf, outputspec,
+                               registration_node, spec['registered'])
     return wf
 
 

@@ -18,7 +18,22 @@
 
 
 def connect_from_spec(wf, spec, original_spec, exclude=None):
-    """Function to connect all original inputs to a new spec"""
+    """Function to connect all original inputs to a new spec
+
+    Parameters
+    ----------
+    wf : Workflow
+
+    spec : dict
+
+    original_spec : dict
+
+    exclude : list, tuple, or dict, optional
+
+    Returns
+    -------
+    Workflow
+    """
     for _item, _value in original_spec.items():
         if isinstance(exclude, (list, tuple)):
             if _item not in exclude:
